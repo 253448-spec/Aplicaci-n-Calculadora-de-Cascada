@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.upchiapas.kt_template.Calculadora.view.CascadaPage
-import com.upchiapas.kt_template.counter.view.CounterPage
-import com.upchiapas.kt_template.helloworld.view.HelloWorldPage
 import com.upchiapas.kt_template.ui.theme.Kt_templateTheme
 
 class MainActivity : ComponentActivity() {

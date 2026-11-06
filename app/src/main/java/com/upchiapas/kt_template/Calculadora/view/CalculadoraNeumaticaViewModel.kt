@@ -1,12 +1,11 @@
 package com.upchiapas.kt_template.Calculadora.view
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class CalculadoraNeumaticaViewModel : ViewModel(){
+class CalculadoraNeumaticaViewModel : ViewModel() {
 
     private val _entradaTexto = MutableStateFlow("")
     val entradaTexto: StateFlow<String> = _entradaTexto.asStateFlow()
@@ -14,51 +13,51 @@ class CalculadoraNeumaticaViewModel : ViewModel(){
     private val _mensaje = MutableStateFlow("")
     val mensaje: StateFlow<String> = _mensaje.asStateFlow()
 
+    private val _esValida = MutableStateFlow<Boolean?>(null)
+    val esValida: StateFlow<Boolean?> = _esValida.asStateFlow()
+
+    private val _historial = MutableStateFlow<List<String>>(emptyList())
+    val historial: StateFlow<List<String>> = _historial.asStateFlow()
+
     fun entradaDeTexto(nuevoTexto: String) {
         _entradaTexto.value = nuevoTexto.uppercase()
     }
 
     fun evaluarSecuencia() {
         val entrada = _entradaTexto.value.trim()
-
-        if (entrada.length % 2 != 0 || entrada.length < 4) {
-            _mensaje.value = "Secuencia inválida"
-            return
+        val resultado = validarSecuencia(entrada)
+        _mensaje.value = resultado.first
+        _esValida.value = resultado.second
+        if (resultado.second) {
+            _historial.value = _historial.value + entrada
         }
+    }
+
+    private fun validarSecuencia(entrada: String): Pair<String, Boolean> {
+        if (entrada.length % 2 != 0 || entrada.length < 4)
+            return "Secuencia inválida" to false
 
         val permitidos = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        val simbolosP = "+-"
-        val estadoCilindro = mutableMapOf<Char, Char>()
-        val balanceCilindro = mutableMapOf<Char, Int>()
+        val simbolos = "+-"
+        val estado = mutableMapOf<Char, Char>()
+        val balance = mutableMapOf<Char, Int>()
 
         for (i in entrada.indices step 2) {
             val letra = entrada[i]
             val signo = entrada[i + 1]
 
-            if (!permitidos.contains(letra) || !simbolosP.contains(signo)) {
-                _mensaje.value = "Secuencia inválida"
-                return
-            }
+            if (letra !in permitidos || signo !in simbolos)
+                return "Secuencia inválida" to false
 
-            if (estadoCilindro[letra] == signo) {
-                _mensaje.value = "Secuencia inválida"
-                return
-            }
-            estadoCilindro[letra] = signo
+            if (estado[letra] == signo)
+                return "Secuencia inválida" to false
+            estado[letra] = signo
 
-            val balanceActual = balanceCilindro.getOrDefault(letra, 0)
-            if (signo == '+') balanceCilindro[letra] = balanceActual + 1
-            else balanceCilindro[letra] = balanceActual - 1
+            balance[letra] = (balance[letra] ?: 0) + if (signo == '+') 1 else -1
         }
 
-        for ((_, balance) in balanceCilindro) {
-            if (balance != 0) {
-                _mensaje.value = "Secuencia inválida"
-                return
-            }
-        }
+        if (balance.values.any { it != 0 }) return "Secuencia inválida" to false
 
-        _mensaje.value = "Secuencia válida"
+        return "Secuencia válida" to true
     }
-
 }
