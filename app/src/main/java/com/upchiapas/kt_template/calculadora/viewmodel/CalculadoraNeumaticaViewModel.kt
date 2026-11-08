@@ -1,35 +1,30 @@
-package com.upchiapas.kt_template.Calculadora.view
+package com.upchiapas.kt_template.calculadora.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.upchiapas.kt_template.calculadora.model.CalculadoraUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class CalculadoraNeumaticaViewModel : ViewModel() {
 
-    private val _entradaTexto = MutableStateFlow("")
-    val entradaTexto: StateFlow<String> = _entradaTexto.asStateFlow()
-
-    private val _mensaje = MutableStateFlow("")
-    val mensaje: StateFlow<String> = _mensaje.asStateFlow()
-
-    private val _esValida = MutableStateFlow<Boolean?>(null)
-    val esValida: StateFlow<Boolean?> = _esValida.asStateFlow()
-
-    private val _historial = MutableStateFlow<List<String>>(emptyList())
-    val historial: StateFlow<List<String>> = _historial.asStateFlow()
+    private val _uiState = MutableStateFlow(CalculadoraUiState())
+    val uiState: StateFlow<CalculadoraUiState> = _uiState.asStateFlow()
 
     fun entradaDeTexto(nuevoTexto: String) {
-        _entradaTexto.value = nuevoTexto.uppercase()
+        _uiState.update { it.copy(entradaTexto = nuevoTexto.uppercase()) }
     }
 
     fun evaluarSecuencia() {
-        val entrada = _entradaTexto.value.trim()
+        val entrada = _uiState.value.entradaTexto.trim()
         val resultado = validarSecuencia(entrada)
-        _mensaje.value = resultado.first
-        _esValida.value = resultado.second
-        if (resultado.second) {
-            _historial.value = _historial.value + entrada
+        _uiState.update { actual ->
+            actual.copy(
+                mensaje = resultado.first,
+                esValida = resultado.second,
+                historial = if (resultado.second) actual.historial + entrada else actual.historial
+            )
         }
     }
 

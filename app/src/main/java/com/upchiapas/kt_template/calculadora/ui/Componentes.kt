@@ -1,4 +1,4 @@
-package com.upchiapas.kt_template.Calculadora.view
+package com.upchiapas.kt_template.calculadora.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,7 +14,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.upchiapas.kt_template.R
 
 @Composable
 fun ResultadoCard(mensaje: String, esValida: Boolean?) {
@@ -39,14 +41,16 @@ fun EntradaSecuencia(valor: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = valor,
         onValueChange = onValueChange,
-        label = { Text("Secuencia Neumática") },
+        label = { Text(stringResource(R.string.label_secuencia)) },
         modifier = Modifier.fillMaxWidth()
     )
 }
 
 @Composable
 fun BotonEvaluar(onClick: () -> Unit) {
-    Button(onClick = onClick) { Text("Evaluar") }
+    Button(onClick = onClick) { 
+        Text(stringResource(R.string.btn_evaluar)) 
+    }
 }
 
 @Composable

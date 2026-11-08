@@ -1,4 +1,4 @@
-package com.upchiapas.kt_template.Calculadora.view
+package com.upchiapas.kt_template.calculadora.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,21 +12,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.upchiapas.kt_template.R
+import com.upchiapas.kt_template.calculadora.viewmodel.CalculadoraNeumaticaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CascadaPage(viewModel: CalculadoraNeumaticaViewModel = viewModel()) {
 
-    val entrada by viewModel.entradaTexto.collectAsStateWithLifecycle()
-    val mensaje by viewModel.mensaje.collectAsStateWithLifecycle()
-    val esValida by viewModel.esValida.collectAsStateWithLifecycle()
-    val historial by viewModel.historial.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Calculadora Cascada") }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.titulo_pantalla)) }) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -36,14 +36,14 @@ fun CascadaPage(viewModel: CalculadoraNeumaticaViewModel = viewModel()) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ResultadoCard(mensaje = mensaje, esValida = esValida)
+            ResultadoCard(mensaje = uiState.mensaje, esValida = uiState.esValida)
             EntradaSecuencia(
-                valor = entrada,
+                valor = uiState.entradaTexto,
                 onValueChange = viewModel::entradaDeTexto
             )
             ChipsEjemplos(onSeleccionar = viewModel::entradaDeTexto)
             BotonEvaluar(onClick = viewModel::evaluarSecuencia)
-            HistorialLista(historial = historial)
+            HistorialLista(historial = uiState.historial)
         }
     }
 }
